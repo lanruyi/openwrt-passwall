@@ -1,0 +1,38 @@
+name: Update-openwrt-passwall
+
+on:
+  schedule:
+    - cron: 0/3 * * * *
+
+jobs:
+
+  prepare:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        ref: main
+        fetch-depth: 0
+        lfs: true
+
+    - name: Set git identity
+      run : |
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+    - name: Load latest openwrt-passwall
+      run: |
+        git clone -b main https://github.com/xiaorouji/openwrt-passwall.git --depth=1 ./tmp/openwrt-passwall
+        cp -rf ./tmp/openwrt-passwall/luci-app-passwall ./
+    - name: Apply commit changes
+      run: |
+        git add ./luci-app-passwall/
+        echo -e "[bot] openwrt-passwall: update\n\nlatest commit: $(cat ./tmp/openwrt-passwall/.git/refs/heads/master)" > ./tmp/message
+        git commit --file="./tmp/message" || exit 0
+    - name: Push Commits
+      env:
+        DOWNSTREAM_BRANCH: main
+      run: git push origin $DOWNSTREAM_BRANCH
