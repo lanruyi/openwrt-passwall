@@ -30,7 +30,7 @@ jobs:
     - name: Apply commit changes
       run: |
         git add ./luci-app-passwall/
-        echo -e "[bot] openwrt-passwall: update\n\nlatest commit: $(cat ./tmp/openwrt-passwall/.git/refs/heads/master)" > ./tmp/message
+        echo -e "[bot] openwrt-passwall: update\n\nlatest commit: $(cat ./tmp/openwrt-passwall/.git/refs/heads/main)" > ./tmp/message
         git commit --file="./tmp/message" || exit 0
     - name: Push Commits
       env:
